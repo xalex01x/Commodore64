@@ -110,8 +110,8 @@ u16 readWord(u16 addr)
 
 void ZNflags(u8 value)
 {
-    cpu.flag = (value) ? cpu.flag & ~ZERO : cpu.flag | ZERO;
-    cpu.flag = (value & NEGATIVE) | (cpu.flag & ~NEGATIVE);
+    cpu.flag = (value) ? cpu.flag & ~ZERO_FLAG : cpu.flag | ZERO_FLAG;
+    cpu.flag = (value & NEGATIVE_FLAG) | (cpu.flag & ~NEGATIVE_FLAG);
 }
 
 // 0xfce2,        0xfd02,      0xfcef,          0xfda3,     0xff6e,       0xfcf5,     0xfd15
@@ -216,7 +216,7 @@ void interrupt(char type)
     if (type == 'n')
     {
         cpu.pc = ((readAddr(0xFFFB) << 8) | readAddr(0xFFFA)) - 1; // routine NMII
-        cpu.flag |= INTERRUPT;
+        cpu.flag |= INTERRUPT_FLAG;
         bus.NMI = 1;
     }
     else

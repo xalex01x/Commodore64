@@ -119,8 +119,8 @@ int iteration()
         return cpuCycle();
     }
 
-    // CONTROLLO INTERRUPT
-    if ((!bus.IRQ && !(cpu.flag & INTERRUPT)))
+    // CONTROLLO INTERRUPT_FLAG
+    if ((!bus.IRQ && !(cpu.flag & INTERRUPT_FLAG)))
     {
         cout << "Gestione interrupt IRQ" << endl;
         interrupt('i');
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
         if(opcode == 0x0E){ // ASL nnnn
             u16 addr = ABSOLUTE_ADDRESSING;
             u8 value = readAddr(addr);
-            cpu.flag = (value >> 7) ? cpu.flag | CARRY : cpu.flag & ~CARRY;
+            cpu.flag = (value >> 7) ? cpu.flag | CARRY_FLAG : cpu.flag & ~CARRY_FLAG;
             value <<= 1;
             ZNflags(value);
             writeAddr(addr, value);
@@ -272,12 +272,12 @@ int main(int argc, char *argv[])
             continue;
         }
         if(opcode == 0x38){ // SEC
-            cpu.flag |= CARRY;
+            cpu.flag |= CARRY_FLAG;
             remainingCycles += 2;
             continue;
         }
         if(opcode == 0x58){ // CLI
-            cpu.flag &= ~INTERRUPT;
+            cpu.flag &= ~INTERRUPT_FLAG;
             remainingCycles += 2;
             continue;
         }
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
             continue;
         }
         if(opcode == 0x85){ // STA nn
-            writeAddr(ZERO_PAGE_ADDRESSING, cpu.A);
+            writeAddr(ZERO_FLAG_PAGE_ADDRESSING, cpu.A);
             remainingCycles += 3;
             continue;
         }
@@ -300,22 +300,22 @@ int main(int argc, char *argv[])
         }
         if(opcode == 0xAE){ // LDX nnnn
             cpu.X = readAddr(ABSOLUTE_ADDRESSING);
-            cpu.flag = (cpu.X) ? cpu.flag & ~ZERO : cpu.flag | ZERO;
-            cpu.flag = (cpu.X & NEGATIVE) | (cpu.flag & ~NEGATIVE);
+            cpu.flag = (cpu.X) ? cpu.flag & ~ZERO_FLAG : cpu.flag | ZERO_FLAG;
+            cpu.flag = (cpu.X & NEGATIVE_FLAG) | (cpu.flag & ~NEGATIVE_FLAG);
             remainingCycles += 4;
             continue;
         }
         if(opcode == 0xC4){ //CPY nn
-            u8 res = cpu.Y - readAddr(ZERO_PAGE_ADDRESSING);
+            u8 res = cpu.Y - readAddr(ZERO_FLAG_PAGE_ADDRESSING);
             ZNflags(res);
-            cpu.flag = cpu.Y >= readAddr(readAddr(cpu.pc)) ? cpu.flag & ~CARRY : cpu.flag | CARRY;
+            cpu.flag = cpu.Y >= readAddr(readAddr(cpu.pc)) ? cpu.flag & ~CARRY_FLAG : cpu.flag | CARRY_FLAG;
             remainingCycles += 3;
             continue;
         }
         if(opcode == 0xC5){ // CMP nn
-            u8 res = cpu.A - readAddr(ZERO_PAGE_ADDRESSING);
+            u8 res = cpu.A - readAddr(ZERO_FLAG_PAGE_ADDRESSING);
             ZNflags(res);
-            cpu.flag = cpu.A >= readAddr(readAddr(cpu.pc)) ? cpu.flag & ~CARRY : cpu.flag | CARRY;
+            cpu.flag = cpu.A >= readAddr(readAddr(cpu.pc)) ? cpu.flag & ~CARRY_FLAG : cpu.flag | CARRY_FLAG;
             remainingCycles += 3;
             continue;
         }
@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
             u16 base = ABSOLUTE_ADDRESSING;
             u8 res = cpu.A - readAddr(base);
             ZNflags(res);
-            cpu.flag = cpu.A >= readAddr(base) ? cpu.flag & ~CARRY : cpu.flag | CARRY;
+            cpu.flag = cpu.A >= readAddr(base) ? cpu.flag & ~CARRY_FLAG : cpu.flag | CARRY_FLAG;
             remainingCycles += 4;
             continue;
         }

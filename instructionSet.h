@@ -40,7 +40,7 @@ void x0E() { error = 1; }
 
 void x10()
 { // BPL
-    if (cpu.flag & NEGATIVE)
+    if (cpu.flag & NEGATIVE_FLAG)
     {
         cpu.pc++;
         remainingCycles += 2;
@@ -48,7 +48,7 @@ void x10()
     else
     {
         u16 oldPc = cpu.pc;
-        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
+        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE_FLAG) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
         cpu.pc = oldPc + offset + 1;
         remainingCycles += 3;
         if (((cpu.pc + 1) & 0xff00) != (oldPc & 0xff00))
@@ -64,7 +64,7 @@ void x16() { error = 1; }
 
 void x18()
 { // CLC
-    cpu.flag &= ~CARRY;
+    cpu.flag &= ~CARRY_FLAG;
     remainingCycles += 2;
 }
 
@@ -103,10 +103,10 @@ void x29()
 
 void x2A()
 { // ROL A
-    u8 oldCarry = cpu.flag & CARRY;
-    cpu.flag = (cpu.A & 0x80) ? cpu.flag | CARRY : cpu.flag & ~CARRY;
+    u8 oldCARRY_FLAG = cpu.flag & CARRY_FLAG;
+    cpu.flag = (cpu.A & 0x80) ? cpu.flag | CARRY_FLAG : cpu.flag & ~CARRY_FLAG;
     cpu.A <<= 1;
-    cpu.A |= oldCarry;
+    cpu.A |= oldCARRY_FLAG;
     ZNflags(cpu.A);
     remainingCycles += 2;
 }
@@ -124,10 +124,10 @@ void x2E() { error = 1; }
 
 void x30()
 { // BMI
-    if (cpu.flag & NEGATIVE)
+    if (cpu.flag & NEGATIVE_FLAG)
     {
         u16 oldPc = cpu.pc;
-        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
+        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE_FLAG) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
         cpu.pc = oldPc + offset + 1;
         remainingCycles += 3;
         if (((cpu.pc + 1) & 0xff00) != (oldPc & 0xff00))
@@ -226,10 +226,10 @@ void x68()
 
 void x69()
 { // ADC #nn
-    if (cpu.flag & DECIMAL)
+    if (cpu.flag & DECIMAL_FLAG)
     {
         u8 value = readAddr(++cpu.pc);
-        u8 al = (cpu.A & 0x0F) + (value & 0x0F) + (cpu.flag & CARRY);
+        u8 al = (cpu.A & 0x0F) + (value & 0x0F) + (cpu.flag & CARRY_FLAG);
         u8 ah = (cpu.A >> 4) + (value >> 4);
         if (al > 9)
         {
@@ -239,21 +239,21 @@ void x69()
         if (ah > 9)
         {
             ah -= 10;
-            cpu.flag |= CARRY;
+            cpu.flag |= CARRY_FLAG;
         }
         else
         {
-            cpu.flag &= ~CARRY;
+            cpu.flag &= ~CARRY_FLAG;
         }
         cpu.A = (ah << 4) | (al & 0x0F);
         ZNflags(cpu.A);
     }
     else
     {
-        u16 res = cpu.A + readAddr(++cpu.pc) + (cpu.flag & CARRY);
+        u16 res = cpu.A + readAddr(++cpu.pc) + (cpu.flag & CARRY_FLAG);
         cpu.A = res;
         ZNflags(cpu.A);
-        cpu.flag = (res >> 8) | (cpu.flag & ~CARRY);
+        cpu.flag = (res >> 8) | (cpu.flag & ~CARRY_FLAG);
         remainingCycles += 2;
     }
 }
@@ -288,7 +288,7 @@ void x76() { error = 1; }
 
 void x78()
 { // SEI
-    cpu.flag |= INTERRUPT;
+    cpu.flag |= INTERRUPT_FLAG;
     remainingCycles += 2;
 }
 
@@ -356,7 +356,7 @@ void x8E()
 
 void x90()
 { // BCC
-    if (cpu.flag & CARRY)
+    if (cpu.flag & CARRY_FLAG)
     {
         cpu.pc++;
         remainingCycles += 2;
@@ -364,7 +364,7 @@ void x90()
     else
     {
         u16 oldPc = cpu.pc;
-        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
+        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE_FLAG) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
         cpu.pc = oldPc + offset + 1;
         remainingCycles += 3;
         if (((cpu.pc + 1) & 0xff00) != (oldPc & 0xff00))
@@ -495,10 +495,10 @@ void xAE() { error = 1; }
 
 void xB0()
 { // BCS
-    if (cpu.flag & CARRY)
+    if (cpu.flag & CARRY_FLAG)
     {
         u16 oldPc = cpu.pc;
-        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
+        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE_FLAG) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
         cpu.pc = oldPc + offset + 1;
         remainingCycles += 3;
         if (((cpu.pc + 1) & 0xff00) != (oldPc & 0xff00))
@@ -605,7 +605,7 @@ void xCE() { error = 1; }
 
 void xD0()
 { // BNE
-    if (cpu.flag & ZERO)
+    if (cpu.flag & ZERO_FLAG)
     {
         cpu.pc++;
         remainingCycles += 2;
@@ -613,7 +613,7 @@ void xD0()
     else
     {
         u16 oldPc = cpu.pc;
-        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
+        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE_FLAG) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
         cpu.pc = oldPc + offset + 1;
         remainingCycles += 3;
         if (((cpu.pc + 1) & 0xff00) != (oldPc & 0xff00))
@@ -626,7 +626,7 @@ void xD1()
     u16 addr = INDIRECT_INDEXED_ADDRESSING;
     u8 res = cpu.A - readAddr(addr);
     ZNflags(res);
-    cpu.flag = cpu.A >= readAddr(addr) ? cpu.flag & ~CARRY : cpu.flag | CARRY;
+    cpu.flag = cpu.A >= readAddr(addr) ? cpu.flag & ~CARRY_FLAG : cpu.flag | CARRY_FLAG;
     remainingCycles += 5;
     if ((addr & 0xff00) != ((addr - cpu.Y) & 0xff00))
         remainingCycles += 1;
@@ -638,7 +638,7 @@ void xD6() { error = 1; }
 
 void xD8()
 { // CLD
-    cpu.flag &= (~DECIMAL);
+    cpu.flag &= (~DECIMAL_FLAG);
     remainingCycles += 2;
 }
 
@@ -652,7 +652,7 @@ void xDD()
     u16 addr = ABSOLUTE_X_ADDRESSING;
     u8 res = cpu.A - readAddr(addr);
     ZNflags(res);
-    cpu.flag = cpu.A >= readAddr(addr - cpu.X) ? cpu.flag & ~CARRY : cpu.flag | CARRY;
+    cpu.flag = cpu.A >= readAddr(addr - cpu.X) ? cpu.flag & ~CARRY_FLAG : cpu.flag | CARRY_FLAG;
     remainingCycles += 4;
     if ((addr & 0xff00) != (base & 0xff00))
         remainingCycles += 1;
@@ -664,7 +664,7 @@ void xE0()
 { // CPX #nn
     u8 res = cpu.X - readAddr(++cpu.pc);
     ZNflags(res);
-    cpu.flag = cpu.X >= readAddr(cpu.pc) ? cpu.flag & ~CARRY : cpu.flag | CARRY;
+    cpu.flag = cpu.X >= readAddr(cpu.pc) ? cpu.flag & ~CARRY_FLAG : cpu.flag | CARRY_FLAG;
     remainingCycles += 2;
 }
 
@@ -700,10 +700,10 @@ void xEE() { error = 1; }
 
 void xF0()
 { // BEQ
-    if (cpu.flag & ZERO)
+    if (cpu.flag & ZERO_FLAG)
     {
         u16 oldPc = cpu.pc;
-        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
+        u16 offset = (readAddr(cpu.pc + 1) & NEGATIVE_FLAG) ? 0xff00 | readAddr(cpu.pc + 1) : 0x0000 | readAddr(cpu.pc + 1);
         cpu.pc = oldPc + offset + 1;
         remainingCycles += 3;
         if (((cpu.pc + 1) & 0xff00) != (oldPc & 0xff00))

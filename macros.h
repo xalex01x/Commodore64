@@ -12,22 +12,22 @@ struct processor {
 };
 
 struct wires {
-    u8 IRQ;     // interrupt request: output dal VIC, input nel 6510
-    u8 NMI;     // interrupt non ignorabile
+    u8 IRQ;     // Interrupt request: output dal VIC, input nel 6510
+    u8 NMI;     // Interrupt non ignorabile
     u8 BA_RDY;  // la linea BA/RDY: in output dal VIC, dice alla CPU che può lavorare (alto) o no (basso)
     u8 LP;      // manipolazione di registri del VIC
     u8 phi;     // clock del VIC. esistono due phi ma sono alla stessa frequenza quindi we don't care
     u8 RW;      // 1 = lettura, 0 = scrittura utilizzando il bus
 };
 
-#define NEGATIVE    0b10000000
-#define OVERFLOW    0b01000000
-#define UNUSED      0b00100000
-#define BREAK       0b00010000
-#define DECIMAL     0b00001000
-#define INTERRUPT   0b00000100
-#define ZERO        0b00000010
-#define CARRY       0b00000001
+#define NEGATIVE_FLAG    0b10000000
+#define OVERFLOW_FLAG    0b01000000
+#define UNUSED_FLAG      0b00100000
+#define BREAK_FLAG       0b00010000
+#define DECIMAL_FLAG     0b00001000
+#define INTERRUPT_FLAG   0b00000100
+#define ZERO_FLAG        0b00000010
+#define CARRY_FLAG       0b00000001
 
 #define HEIGH       200
 #define WIDTH       320
@@ -78,4 +78,4 @@ struct wires {
 
 //  SLD
 #define CELL_SIDE       3
-#define REFRESH_RATE    1/60
+#define REFRESH_RATE    (float)1/60
